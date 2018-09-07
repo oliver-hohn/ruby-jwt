@@ -6,6 +6,11 @@ require 'jwt/decode'
 describe JWT do
   let(:payload) { { 'user_id' => 'some@user.tld' } }
 
+  it do
+    require 'pry'
+    binding.pry
+  end
+
   let :data do
     {
       :secret => 'My$ecretK3y',
