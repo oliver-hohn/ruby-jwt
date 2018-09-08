@@ -31,7 +31,7 @@ And run `bundle install`
 
 ## Algorithms and Usage
 
-The JWT spec supports NONE, HMAC, RSASSA, ECDSA and RSASSA-PSS algorithms for cryptographic signing. Currently the jwt gem supports NONE, HMAC, RSASSA and ECDSA. If you are using cryptographic signing, you need to specify the algorithm in the options hash whenever you call JWT.decode to ensure that an attacker [cannot bypass the algorithm verification step](https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries/).
+The JWT spec supports NONE, HMAC, RSASSA, ECDSA and RSASSA-PSS algorithms for cryptographic signing. Currently the jwt gem supports NONE, HMAC, RSASSA, ECDSA and RSASSA-PSS. If you are using cryptographic signing, you need to specify the algorithm in the options hash whenever you call JWT.decode to ensure that an attacker [cannot bypass the algorithm verification step](https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries/).
 
 See: [ JSON Web Algorithms (JWA) 3.1. "alg" (Algorithm) Header Parameter Values for JWS](https://tools.ietf.org/html/rfc7518#section-3.1)
 
@@ -154,12 +154,12 @@ gem 'rbnacl'
 
 For more detailed installation instruction check the official [repository](https://github.com/cryptosphere/rbnacl) on GitHub.
 
-* ED25519 
+* ED25519
 
-```ruby 
+```ruby
 private_key = RbNaCl::Signatures::Ed25519::SigningKey.new('abcdefghijklmnopqrstuvwxyzABCDEF')
 public_key = private_key.verify_key
-token = JWT.encode payload, private_key, 'ED25519' 
+token = JWT.encode payload, private_key, 'ED25519'
 
 # eyJhbGciOiJFRDI1NTE5In0.eyJkYXRhIjoidGVzdCJ9.6xIztXyOupskddGA_RvKU76V9b2dCQUYhoZEVFnRimJoPYIzZ2Fm47CWw8k2NTCNpgfAuxg9OXjaiVK7MvrbCQ
 puts token
@@ -175,7 +175,29 @@ decoded_token = JWT.decode token, public_key, true, { algorithm: 'ED25519' }
 
 **RSASSA-PSS**
 
-Not implemented.
+* PS256 - RSASSA-PSS using SHA-256 hash algorithm
+* PS384 - RSASSA-PSS using SHA-384 hash algorithm
+* PS512 - RSASSA-PSS using SHA-512 hash algorithm
+
+```ruby
+rsa_private = OpenSSL::PKey::RSA.generate 2048
+rsa_public = rsa_private.public_key
+
+token = JWT.encode payload, rsa_private, 'PS256'
+
+# eyJhbGciOiJQUzI1NiJ9.eyJkYXRhIjoidGVzdCJ9.KEmqagMUHM-NcmXo6818ZazVTIAkn9qU9KQFT1c5Iq91n0KRpAI84jj4ZCdkysDlWokFs3Dmn4MhcXP03oJKLFgnoPL40_Wgg9iFr0jnIVvnMUp1kp2RFUbL0jqExGTRA3LdAhuvw6ZByGD1bkcWjDXygjQw-hxILrT1bENjdr0JhFd-cB0-ps5SB0mwhFNcUw-OM3Uu30B1-mlFaelUY8jHJYKwLTZPNxHzndt8RGXF8iZLp7dGb06HSCKMcVzhASGMH4ZdFystRe2hh31cwcvnl-Eo_D4cdwmpN3Abhk_8rkxawQJR3duh8HNKc4AyFPo7SabEaSu2gLnLfN3yfg
+puts token
+
+decoded_token = JWT.decode token, rsa_public, true, { algorithm: 'PS256' }
+
+# Array
+# [
+#   {"data"=>"test"}, # payload
+#   {"alg"=>"PS256"} # header
+# ]
+puts decoded_token
+```
+
 
 ## Support for reserved claim names
 JSON Web Token defines some reserved claim names and defines how they should be
